@@ -66,11 +66,13 @@ export class Configuration {
         try {
             fs.accessSync(filepath, fs.constants.R_OK);
         } catch (err) {
-            if (env === 'test') {
-                return this.loadConfigFile('development');
-            } else {
-                //in this we don't have a file. If we want file to be mandatory, we can throw an error here
-                return false;
+            switch (env) {
+                case 'test':
+                    return this.loadConfigFile('development');
+                case 'staging':
+                    return this.loadConfigFile('production');
+                default:
+                    return false;
             }
         }
         // NB: If for some reason you want to reload config (which you shouldn't need to ever do outside test)
@@ -123,12 +125,23 @@ export class Configuration {
         const envFilePath = path.resolve(__dirname, Configuration.configFileDir, '.env');
         return envFilePath;
     }
-
+    /**
+     * Gets the path to a config file for the given environment.
+     * 
+     * @param environment The environment to load
+     * @returns string The path to the config file
+     */
     public static getConfigFilePath(environment: string): string {
         const filePath = path.resolve(__dirname, Configuration.configFileDir, `${environment}.ts`);
         return filePath;
     }
 
+    /**
+     * Static accessor for the singleton instance of the Configuration class.
+     * 
+     * @param refresh: boolean Whether to reload the config file or not (for unit testing)
+     * @returns The singleton instance of the Configuration class
+     */
     public static getConfig(refresh:boolean = false): Configuration {
         if (refresh || !Configuration.singleton) {
             const env = process.env.NODE_ENV || 'production';

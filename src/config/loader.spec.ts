@@ -2,43 +2,25 @@ import { Configuration } from './loader';
 import fs from 'fs-extra';
 import path from 'path';
 
-describe('Testing config loading and value access', () => {
+describe('Tests for config loading and value access', () => {
     let oldConfigFileDir: string = Configuration.configFileDir;
     
-    beforeAll(() => {
-        Configuration.configFileDir = path.resolve('./_testconfigs');
-        try {
-            if (fs.existsSync(Configuration.configFileDir)) return;
-            fs.ensureDirSync(Configuration.configFileDir);
-        } catch (err) {
-            throw (err);
-        }
+    beforeAll( () => {
+        createTestConfigDirectory();
     });
 
-    afterAll(async () => {
-        await fs.remove(Configuration.configFileDir)
-            .catch((error) => { 
-                console.error(`Error deleting ${Configuration.configFileDir}:`, error); 
-            });
+    afterAll( () => {
+        removeTestConfigDirectory();
         Configuration.configFileDir = oldConfigFileDir;
-    });
-
-    beforeEach(() => {
-        jest.resetModules();
     });
 
     afterEach( () => {
         jest.restoreAllMocks();
         process.env.NODE_ENV = 'test';
-        // remove any test files
-        try { 
-            fs.emptyDirSync(Configuration.configFileDir);
-        } catch(error) { 
-            console.error('Error emptying directory:', error); 
-        }
+        removeTestConfigFiles();
     });
 
-    it('picks up the node environment correctly and falls back in test', () => {
+    it('picks up the node environment correctly and falls back correctly in test', () => {
         // Just making sure
         process.env.NODE_ENV = 'test';
         const factorySpy = jest.spyOn(Configuration, 'getConfig');
@@ -48,11 +30,24 @@ describe('Testing config loading and value access', () => {
         expect(confFileSpy).toHaveBeenCalledTimes(2);
         expect(confFileSpy).toHaveBeenLastCalledWith('development');
         expect(confFileSpy).toHaveBeenNthCalledWith(1, 'test');
-        const configFilePath: string = confFileSpy.mock.results[0].value as string;
+        let configFilePath: string = confFileSpy.mock.results[0].value as string;
         expect(configFilePath.endsWith('/test.ts')).toBe(true);
-    
-        // const client = new MozSocialClient('https://mozilla.social', '2Nx-rH6IifCkE1rNloCan916f-1abT-TkoCTpDc7qi4');
-        // expect(client.endpoint).toBe('https://mozilla.social/api/v1/');
+        configFilePath = confFileSpy.mock.results[1].value as string;
+        expect(configFilePath.endsWith('/development.ts')).toBe(true);
+    });
+    it('picks falls back to production in staging if there is no staging conf', () => {
+        process.env.NODE_ENV = 'staging';
+        const factorySpy = jest.spyOn(Configuration, 'getConfig');
+        const confFileSpy = jest.spyOn(Configuration, 'getConfigFilePath' as any);
+        const configInstance = Configuration.getConfig(true);
+        expect(factorySpy).toHaveBeenCalled();
+        expect(confFileSpy).toHaveBeenCalledTimes(2);
+        expect(confFileSpy).toHaveBeenLastCalledWith('production');
+        expect(confFileSpy).toHaveBeenNthCalledWith(1, 'staging');
+        let configFilePath: string = confFileSpy.mock.results[0].value as string;
+        expect(configFilePath.endsWith('/staging.ts')).toBe(true);
+        configFilePath = confFileSpy.mock.results[1].value as string;
+        expect(configFilePath.endsWith('/production.ts')).toBe(true);
     });
     it('defaults to production when no NODE_ENV is set', () => {
         process.env.NODE_ENV = '';
@@ -116,3 +111,30 @@ function createConfigFile(path: string, contents: Object): void {
         console.error(`Error writing config file: ${err}`);
     }
 }
+
+const createTestConfigDirectory = () => {
+    Configuration.configFileDir = path.resolve('./_testconfigs');
+    try {
+        if (fs.existsSync(Configuration.configFileDir)) return;
+        fs.ensureDirSync(Configuration.configFileDir);
+    } catch (err) {
+        throw (err);
+    }
+};
+
+const removeTestConfigDirectory = () => {
+    try { 
+        fs.removeSync(Configuration.configFileDir)
+    } catch(error) { 
+        console.error(`Error deleting ${Configuration.configFileDir}:`, error); 
+    };
+};
+
+const removeTestConfigFiles = () => {
+    try { 
+        fs.emptyDirSync(Configuration.configFileDir);
+    } catch(error) { 
+        console.error('Error emptying directory:', error); 
+    }
+    jest.resetModules();
+};
