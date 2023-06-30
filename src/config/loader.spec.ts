@@ -2,34 +2,36 @@ import { Configuration } from './loader';
 import fs from 'fs-extra';
 import path from 'path';
 
-describe('It inits using the right environments and files', () => {
-    let configFileDir: string = path.resolve('./_testconfigs');
+describe('Testing config loading and value access', () => {
     let oldConfigFileDir: string = Configuration.configFileDir;
     
     beforeAll(() => {
-        Configuration.configFileDir = configFileDir;
+        Configuration.configFileDir = path.resolve('./_testconfigs');
         try {
-            if (fs.existsSync(configFileDir)) return;
-            fs.ensureDirSync(configFileDir);
+            if (fs.existsSync(Configuration.configFileDir)) return;
+            fs.ensureDirSync(Configuration.configFileDir);
         } catch (err) {
             throw (err);
         }
     });
 
     afterAll(async () => {
-        Configuration.configFileDir = oldConfigFileDir;
-        await fs.remove(configFileDir)
+        await fs.remove(Configuration.configFileDir)
             .catch((error) => { 
-                console.error(`Error deleting ${configFileDir}:`, error); 
+                console.error(`Error deleting ${Configuration.configFileDir}:`, error); 
             });
+        Configuration.configFileDir = oldConfigFileDir;
     });
 
-    afterEach(async () => {
+    afterEach( () => {
         jest.restoreAllMocks();
         process.env.NODE_ENV = 'test';
         // remove any test files
-        await fs.emptyDir(configFileDir)
-            .catch((error) => { console.error('Error emptying directory:', error); });
+        try { 
+            fs.emptyDirSync(Configuration.configFileDir);
+        } catch(error) { 
+            console.error('Error emptying directory:', error); 
+        }
     });
 
     it('picks up the node environment correctly and falls back in test', () => {
@@ -59,7 +61,7 @@ describe('It inits using the right environments and files', () => {
     it('will successfully load the test files when present', () => {
         createEnvFile(
             Configuration.getEnvFilePath(), 
-            { TEST_KEY: 'test_value' }
+            { TEST_KEY: 'test_env_value' }
         );
         createConfigFile(
             Configuration.getConfigFilePath('test'),
@@ -72,7 +74,26 @@ describe('It inits using the right environments and files', () => {
         expect(factorySpy).toHaveBeenCalled();
         expect(envFileSpy).toHaveBeenCalled();
         expect(confFileSpy).toHaveBeenLastCalledWith('test');
-        expect(process.env.TEST_KEY).toBe('test_value');
+        expect(process.env.TEST_KEY).toBe('test_env_value');
+        expect(configInstance.getString('test_key')).toBe('test_value');
+    });
+    it('will return the default value if there is no key in the config', () => {
+        createConfigFile(
+            Configuration.getConfigFilePath('test'),
+            { test_key: 'test_value' }
+        );
+        const configInstance = Configuration.getConfig(true);
+        expect(configInstance.getString('nonexistent_key', 'default_value')).toBe('default_value');
+        expect(configInstance.getString('test_key', 'default_value')).toBe('test_value');
+    });
+    it('will return a nested value correctly', () => {
+        createConfigFile(
+            Configuration.getConfigFilePath('test'),
+            { test_key: { nested_key: 'test_value' } }
+        );
+        const configInstance = Configuration.getConfig(true);
+        expect(configInstance.getString('test_key.nested_key')).toBe('test_value');
+        expect(configInstance.getString('test_key.nested__no_key', 'default_value')).toBe('default_value');
     });
 });
 
@@ -84,9 +105,10 @@ function createEnvFile(path: string, contents: Object): void {
 }
 
 function createConfigFile(path: string, contents: Object): void {
-    const replacer = (key, value) => {
-        
-    }
     const configContent = `export default ${JSON.stringify(contents, null, 4)};`;
-    fs.outputFileSync(path, configContent);
+    try { 
+        fs.outputFileSync(path, configContent);
+    } catch (err) {
+        console.error(`Error writing config file: ${err}`);
+    }
 }

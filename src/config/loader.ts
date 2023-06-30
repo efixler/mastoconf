@@ -12,9 +12,42 @@ export class Configuration {
     private config: any = {};
 
     private constructor(env: Environment) {
-        //const filepath: string = Configuration.getEnvFilePath(env);
         this.loadEnvFile();
         this.loadConfigFile(env);
+    }
+
+    /**
+     * Gets a value from config as a string. When the key is null of undefined, return the default value instead
+     * 
+     * @param key The path in the config to the value.
+     * @param defaultValue 
+     * @returns 
+     */
+    public getString(key: string, defaultValue: string | null = null): string | null {
+        const value = this.getNestedConfigValue(key);
+        if ((value === undefined) || (value === null)) {
+            return defaultValue;
+        } 
+        return value.toString();
+    }
+
+    /**
+     * Gets a nested value from the config object 
+     * 
+     * @param key The path in the config to the value.
+     * @returns The value, or undefined if it doesn't exist
+     */
+    private getNestedConfigValue(key: string): any {
+        const keys = key.split('.');
+        let value = this.config;
+        while (keys.length > 0) {
+            const k:string = keys.shift() as string;
+            if (value[k] === undefined) {
+                return null;
+            }
+            value = value[k];
+        }
+        return value;
     }
 
     /**
@@ -49,9 +82,6 @@ export class Configuration {
             this.config = {};
             return false;
         }
-        console.log(`Loaded config file ${filepath}`);
-        console.log(this.config);
-        //dotenv.config({ path: filepath });
         return true;
     }
 
