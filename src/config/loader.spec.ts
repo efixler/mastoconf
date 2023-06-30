@@ -23,6 +23,10 @@ describe('Testing config loading and value access', () => {
         Configuration.configFileDir = oldConfigFileDir;
     });
 
+    beforeEach(() => {
+        jest.resetModules();
+    });
+
     afterEach( () => {
         jest.restoreAllMocks();
         process.env.NODE_ENV = 'test';
@@ -65,7 +69,7 @@ describe('Testing config loading and value access', () => {
         );
         createConfigFile(
             Configuration.getConfigFilePath('test'),
-            { test_key: 'test_value' }
+            { test_key: 'test_value_1' }
         );
         const factorySpy = jest.spyOn(Configuration, 'getConfig');
         const envFileSpy = jest.spyOn(Configuration, 'getEnvFilePath' as any);
@@ -75,24 +79,24 @@ describe('Testing config loading and value access', () => {
         expect(envFileSpy).toHaveBeenCalled();
         expect(confFileSpy).toHaveBeenLastCalledWith('test');
         expect(process.env.TEST_KEY).toBe('test_env_value');
-        expect(configInstance.getString('test_key')).toBe('test_value');
+        expect(configInstance.getString('test_key')).toBe('test_value_1');
     });
     it('will return the default value if there is no key in the config', () => {
         createConfigFile(
             Configuration.getConfigFilePath('test'),
-            { test_key: 'test_value' }
+            { test_key: 'test_value_2' }
         );
         const configInstance = Configuration.getConfig(true);
         expect(configInstance.getString('nonexistent_key', 'default_value')).toBe('default_value');
-        expect(configInstance.getString('test_key', 'default_value')).toBe('test_value');
+        expect(configInstance.getString('test_key', 'default_value')).toBe('test_value_2');
     });
     it('will return a nested value correctly', () => {
         createConfigFile(
             Configuration.getConfigFilePath('test'),
-            { test_key: { nested_key: 'test_value' } }
+            { test_key: { nested_key: 'test_value_nested' } }
         );
         const configInstance = Configuration.getConfig(true);
-        expect(configInstance.getString('test_key.nested_key')).toBe('test_value');
+        expect(configInstance.getString('test_key.nested_key')).toBe('test_value_nested');
         expect(configInstance.getString('test_key.nested__no_key', 'default_value')).toBe('default_value');
     });
 });

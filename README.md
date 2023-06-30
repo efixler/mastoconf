@@ -23,8 +23,6 @@ In bootstrapping this module, I mostly focused on the loading logic; there's set
 - Accessors, typechecking, defaulting, etc. 
 - Packaging for easy resuse across services
 
-Also, tests are passing individually, but the last test is failing in the suite. I _think_ there's an issue with scratch file deletion synchronous-ness. 
-
 ### Longer term
 - `Configuration` is good consumer access point for feature flag/rollout/test data - to a consuming developer, flags like these basically look like configuration points.
 

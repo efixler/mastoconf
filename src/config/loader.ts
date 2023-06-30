@@ -73,6 +73,8 @@ export class Configuration {
                 return false;
             }
         }
+        // NB: If for some reason you want to reload config (which you shouldn't need to ever do outside test)
+        // you'll need to delete the module from require cache first. Otherwise, you'll get the same object back.
         this.config = require(filepath).default;
         // This means that the file was there, but didn't export 
         // a 'default' property. This most likely indicates a malformed
