@@ -35,7 +35,7 @@ describe('Tests for config loading and value access', () => {
         configFilePath = confFileSpy.mock.results[1].value as string;
         expect(configFilePath.endsWith('/development.ts')).toBe(true);
     });
-    it('picks falls back to production in staging if there is no staging conf', () => {
+    it('falls back to production in staging if there is no staging conf', () => {
         process.env.NODE_ENV = 'staging';
         const factorySpy = jest.spyOn(Configuration, 'getConfig');
         const confFileSpy = jest.spyOn(Configuration, 'getConfigFilePath' as any);
