@@ -12,11 +12,14 @@ There are 4 supported environment types, mapping to the 3 conventional node envi
 
 - First, `Configuration` loads a `.env` file, if there's one in the project root, before loading the environment's config.
 - Then, `Configuration` loads `${environment}.ts` from the designated config folder
-    - This config file is expected export a default object containing config keys
+    - This config file is expected to export a default object containing config keys
     - The `test` environment will fall back to `development` if there's no `test.ts` file
     - Similarly, the `staging` environment will fall back to `production` settings. 
 - Get the configuration object using `Configuration.getConfig()`
-- Access config values via one of the `get` methods. The only one implemented now is `getString()`, we can assume a couple more of these.
+- Access config values via one of the `get` methods. Currently there's `getString()`, `getInteger()` and `getFloat()` we can assume a couple more of these.
+
+The tests are probably to best way to see usage in-action, I'll document a little better when it's more wrapped up.
+
 ## TODOs
 ### Near term
 In bootstrapping this module, I mostly focused on the loading logic; there's sets of work around 

@@ -39,6 +39,13 @@ export class Configuration {
         return value;
     }
 
+    public getFloat(key: string, defaultValue: number | null = null): number | null {
+        const value = this.getNestedConfigValue(key);
+        if (isNaN(value)) {
+            return defaultValue;
+        }
+        return value;
+    }
     /**
      * Gets a nested value from the config object 
      * 
