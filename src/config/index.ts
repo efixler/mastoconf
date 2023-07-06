@@ -1,1 +1,1 @@
-export { Config } from './loader';
+export { Configuration } from './loader';

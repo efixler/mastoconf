@@ -4,11 +4,34 @@ import dotenv from 'dotenv';
 
 type Environment = 'development' | 'production' | 'staging' | 'test';
 
-
+/**
+ * Configuration class. The configuration object must be the default object from a file named
+ * config/[environment].ts, where [environment] is the value of the NODE_ENV environment variable.
+ * 
+ * The expected values for NODE_ENV are 'development', 'production', 'staging', and 'test'.
+ * 
+ * 'staging' and 'test' will use the 'production' and 'development' config files, when their own 
+ * config files are absent, respectively. 
+ * 
+ * Use the static method `Configuration.getInstance()` to get the singleton instance of the
+ * Configuration.
+ */
 export class Configuration {
     private static singleton: Configuration;
-    public static configFileDir: string = '../../config';
-    public static envFileDir: string = '../../';
+    /** 
+     * The location for config files 
+     * 
+     * @type {string}
+     * @default process.cwd() + '/config' 
+    */
+    public static configFileDir: string = path.resolve(process.cwd(), 'config');
+     /** 
+     * The location for a .env file
+     * 
+     * @type {string}
+     * @default process.cwd() 
+    */
+    public static envFileDir: string = process.cwd();
     private config: any = {};
 
     private constructor(env: Environment) {
@@ -17,11 +40,11 @@ export class Configuration {
     }
 
     /**
-     * Gets a value from config as a string. When the key is null of undefined, return the default value instead
+     * Gets a value from config as a string. When the key is null or undefined, return the default value instead
      * 
      * @param key The path in the config to the value.
      * @param defaultValue 
-     * @returns 
+     * @returns The string value or the default value [null]
      */
     public getString(key: string, defaultValue: string | null = null): string | null {
         const value = this.getNestedConfigValue(key);
@@ -31,21 +54,91 @@ export class Configuration {
         return value.toString();
     }
 
+    /**
+     * Gets a value from config as an Integer. When the key is not a number, return the default value instead
+     * 
+     * @param key The path in the config to the value.
+     * @param defaultValue 
+     * @returns The integer value or the default value [null]
+     */
     public getInteger(key: string, defaultValue: number | null = null): number | null {
+        const value = this.getNestedConfigValue(key); 
+        if (value === null || isNaN(value)) {
+            return defaultValue;
+        }
+        return parseInt(value);
+    }
+
+    /**
+     * Gets a value from config as a Float. When the key is not a number, return the default value instead
+     * 
+     * @param key The path in the config to the value.
+     * @param defaultValue 
+     * @returns The float value or the default value [null]
+     */
+    public getFloat(key: string, defaultValue: number | null = null): number | null {
         const value = this.getNestedConfigValue(key);
-        if (isNaN(value)) {
+        if (value === null || isNaN(value)) {
+            return defaultValue;
+        }
+        return parseFloat(value);
+    }
+
+    /**
+     * Gets a value from config as a boolean. 
+     * 
+     * When the key is not a number, return the default value instead
+     * 
+     * @param key The path in the config to the value.
+     * @param defaultValue 
+     * @returns The boolean value or the default value [null]
+     */
+    public getBoolean(key: string, defaultValue: boolean | null = null): boolean | null {
+        const value = this.getNestedConfigValue(key);
+        if (value === null || value === undefined) {
+            return defaultValue;
+        }
+        return !!value;
+    }
+
+    /**
+     * Gets an array from config. If the key's value contains an array with items, return the array, 
+     * otherwise return the default value.
+     * 
+     * @param key string The config key
+     * @param defaultValue Default value [null]
+     * @returns The array value or the default value
+     */
+    public getArray(key: string, defaultValue: Array<any> | null = null): Array<any> | null {
+        const value = this.getNestedConfigValue(key);
+        if (value === null || value === undefined || !Array.isArray(value) || value.length === 0) {
             return defaultValue;
         }
         return value;
     }
 
-    public getFloat(key: string, defaultValue: number | null = null): number | null {
+    /**
+     * Gets a value from config that's an object. If the value is not present, not an object,
+     * or is an empty object, return the default value instead. 
+     * 
+     * Direct access to configuration values is preferred, but this method is provided if there's a need
+     * for object subkeys.
+     * 
+     * @param key 
+     * @param defaultValue 
+     * @returns The object, or the default when empty, null, or not an object
+     */
+    public getObject(key: string, defaultValue: object | null = null): object | null {
         const value = this.getNestedConfigValue(key);
-        if (isNaN(value)) {
+        if (value === null || value === undefined) {
+            return defaultValue;
+        }
+        if (typeof value !== 'object' || Object.keys(value).length === 0 || Array.isArray(value)) {
             return defaultValue;
         }
         return value;
     }
+
     /**
      * Gets a nested value from the config object 
      * 
@@ -132,7 +225,8 @@ export class Configuration {
     /**
      * Gets the path to an env file. This is typically .env in the project's root 
      * folder. The location of the env file can be changed by setting the configFileDir
-     * property on the Configuration class. That setting is used for testing.
+     * property on the Configuration class. That setting is used for testing, or to 
+     * set the config file path before calling getConfig(). 
      * 
      * @returns string The path to the env file
      */
@@ -165,5 +259,3 @@ export class Configuration {
         return Configuration.singleton;
     }
 }
-
-export const Config = Configuration.getConfig();
