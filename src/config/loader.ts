@@ -15,6 +15,12 @@ type Environment = 'development' | 'production' | 'staging' | 'test';
  * 
  * Use the static method `Configuration.getInstance()` to get the singleton instance of the
  * Configuration.
+ * 
+ * The various getXxx methods are used to get values from the configuration. The getXxx methods
+ * use JS type coercion to convert the value to the desired type -- since the configuration is
+ * loaded dynamically, based on the environment, type can't be ascertained at compile time. Accessor
+ * methods all provide for a default value, and return null (or the supplied default) when the specified 
+ * key is not found.
  */
 export class Configuration {
     private static singleton: Configuration;
