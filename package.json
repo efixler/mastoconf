@@ -1,9 +1,15 @@
 {
   "name": "msoc-config",
-  "version": "0.1.3",
-  "main": "config/index.js",
+  "version": "0.1.5",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "docs/**/*"
+  ],
   "scripts": {
     "build": "tsc",
+    "docs": "./bin/make_docs.sh",
     "test": "jest",
     "clean": "rm -rf dist/*"
   },
