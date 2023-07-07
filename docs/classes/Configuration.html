@@ -23,6 +23,11 @@ config/[environment].ts, where [environment] is the value of the NODE_ENV enviro
 config files are absent, respectively. </p>
 <p>Use the static method <code>Configuration.getInstance()</code> to get the singleton instance of the
 Configuration.</p>
+<p>The various getXxx methods are used to get values from the configuration. The getXxx methods
+use JS type coercion to convert the value to the desired type -- since the configuration is
+loaded dynamically, based on the environment, type can&#39;t be ascertained at compile time. Accessor
+methods all provide for a default value, and return null (or the supplied default) when the specified 
+key is not found.</p>
 </div>
 <div class="tsd-comment tsd-typography"></div></section>
 <section class="tsd-panel tsd-hierarchy">
@@ -30,7 +35,7 @@ Configuration.</p>
 <ul class="tsd-hierarchy">
 <li><span class="target">Configuration</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:19</li></ul></aside>
+<li>Defined in loader.ts:25</li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -76,41 +81,41 @@ Configuration.</p>
 <h5><span class="tsd-kind-parameter">env</span>: <span class="tsd-signature-type ">Environment</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Configuration.html" class="tsd-signature-type tsd-kind-class">Configuration</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:37</li></ul></aside></li></ul></section></section>
+<li>Defined in loader.ts:43</li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="singleton" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <code class="tsd-tag ts-flagPrivate">Private</code> <span>singleton</span><a href="#singleton" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">singleton</span><span class="tsd-signature-symbol">:</span> <a href="Configuration.html" class="tsd-signature-type tsd-kind-class">Configuration</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:20</li></ul></aside></section>
+<li>Defined in loader.ts:26</li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="configFileDir" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>config<wbr/>File<wbr/>Dir</span><a href="#configFileDir" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">config<wbr/>File<wbr/>Dir</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
 <div class="tsd-comment tsd-typography"><p>The location for config files</p>
 </div>
 <div class="tsd-comment tsd-typography">
-<h4>Default</h4><pre><code class="language-ts"><span class="hl-0">process</span><span class="hl-1">.</span><span class="hl-2">cwd</span><span class="hl-1">() + </span><span class="hl-3">&#39;/config&#39;</span>
+<h4>Default</h4><pre><code class="language-ts"><span class="hl-2">process</span><span class="hl-1">.</span><span class="hl-8">cwd</span><span class="hl-1">() + </span><span class="hl-3">&#39;/config&#39;</span>
 </code><button>Copy</button></pre>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:27</li></ul></aside></section>
+<li>Defined in loader.ts:33</li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="envFileDir" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>env<wbr/>File<wbr/>Dir</span><a href="#envFileDir" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">env<wbr/>File<wbr/>Dir</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
 <div class="tsd-comment tsd-typography"><p>The location for a .env file</p>
 </div>
 <div class="tsd-comment tsd-typography">
-<h4>Default</h4><pre><code class="language-ts"><span class="hl-0">process</span><span class="hl-1">.</span><span class="hl-2">cwd</span><span class="hl-1">()</span>
+<h4>Default</h4><pre><code class="language-ts"><span class="hl-2">process</span><span class="hl-1">.</span><span class="hl-8">cwd</span><span class="hl-1">()</span>
 </code><button>Copy</button></pre>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:34</li></ul></aside></section>
+<li>Defined in loader.ts:40</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="config" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>config</span><a href="#config" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">config</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = {}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:35</li></ul></aside></section></section>
+<li>Defined in loader.ts:41</li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member"><a id="getEnvFilePath" class="tsd-anchor"></a>
@@ -127,7 +132,7 @@ set the config file path before calling getConfig().</p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:233</li></ul></aside></li></ul></section>
+<li>Defined in loader.ts:239</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getConfigFilePath" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>get<wbr/>Config<wbr/>File<wbr/>Path</span><a href="#getConfigFilePath" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -147,7 +152,7 @@ set the config file path before calling getConfig().</p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:243</li></ul></aside></li></ul></section>
+<li>Defined in loader.ts:249</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getConfig" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>get<wbr/>Config</span><a href="#getConfig" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -164,7 +169,7 @@ set the config file path before calling getConfig().</p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:254</li></ul></aside></li></ul></section>
+<li>Defined in loader.ts:260</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getString" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>String</span><a href="#getString" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -187,7 +192,7 @@ set the config file path before calling getConfig().</p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:49</li></ul></aside></li></ul></section>
+<li>Defined in loader.ts:55</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getInteger" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Integer</span><a href="#getInteger" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -210,7 +215,7 @@ set the config file path before calling getConfig().</p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:64</li></ul></aside></li></ul></section>
+<li>Defined in loader.ts:70</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getFloat" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Float</span><a href="#getFloat" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -233,7 +238,7 @@ set the config file path before calling getConfig().</p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:79</li></ul></aside></li></ul></section>
+<li>Defined in loader.ts:85</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getBoolean" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Boolean</span><a href="#getBoolean" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -257,7 +262,7 @@ set the config file path before calling getConfig().</p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:96</li></ul></aside></li></ul></section>
+<li>Defined in loader.ts:102</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getArray" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Array</span><a href="#getArray" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -283,7 +288,7 @@ otherwise return the default value.</p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:112</li></ul></aside></li></ul></section>
+<li>Defined in loader.ts:118</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getObject" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Object</span><a href="#getObject" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -307,7 +312,7 @@ for object subkeys.</p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:131</li></ul></aside></li></ul></section>
+<li>Defined in loader.ts:137</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="getNestedConfigValue" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>get<wbr/>Nested<wbr/>Config<wbr/>Value</span><a href="#getNestedConfigValue" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-private">
@@ -327,7 +332,7 @@ for object subkeys.</p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:148</li></ul></aside></li></ul></section>
+<li>Defined in loader.ts:154</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="loadConfigFile" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>load<wbr/>Config<wbr/>File</span><a href="#loadConfigFile" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-private">
@@ -348,7 +353,7 @@ and do the same for staging with the production file.</p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:172</li></ul></aside></li></ul></section>
+<li>Defined in loader.ts:178</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="loadEnvFile" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>load<wbr/>Env<wbr/>File</span><a href="#loadEnvFile" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-private">
@@ -363,7 +368,7 @@ the config file.</p>
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in loader.ts:210</li></ul></aside></li></ul></section></section></div>
+<li>Defined in loader.ts:216</li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

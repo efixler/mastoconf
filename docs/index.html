@@ -12,29 +12,49 @@
 <div class="col-content">
 <div class="tsd-page-title">
 <h2>Configuration</h2></div>
-<div class="tsd-panel tsd-typography"><a id="md:what39s-here" class="tsd-anchor"></a><h2><a href="#md:what39s-here">What&#39;s here</a></h2><p>This repo provides configuration tooling, with the intent to make a consistent configuration facility available across services. </p>
+<div class="tsd-panel tsd-typography"><a id="md:mosc-config-configuration" class="tsd-anchor"></a><h2><a href="#md:mosc-config-configuration">mosc-config configuration</a></h2><p>This module provides a configuration facility for straightforward, per-environment configuration, with runtime typechecking in both Typescript and Javascript environments.</p>
+<p>The intent is to provide a small but useful feature set to serve common requirements and standarding configuration paradigms across multiple projects, without any
+environment-checking in your code.</p>
+<a id="md:features" class="tsd-anchor"></a><h3><a href="#md:features">Features</a></h3><ul>
+<li>Separate configuration files for each environment</li>
+<li>Configuration is a plain JS object</li>
+<li>Safe type-checking for strings, booleans, floats and arrays</li>
+<li>Supports nested objects</li>
+<li>Inline defaulting</li>
+<li>.env preloading</li>
+<li>4 environments: <code>development</code>, <code>test</code>, <code>staging</code>, <code>production</code></li>
+<li>Fallback configuration for test and staging environments</li>
+</ul>
+<a id="md:quickstart" class="tsd-anchor"></a><h3><a href="#md:quickstart">Quickstart</a></h3><p>The default location for config files is <code>process.cwd() + /config</code> (this is configurable too)</p>
+<a id="md:configdevelopmentts" class="tsd-anchor"></a><h4><a href="#md:configdevelopmentts"><code>config/development.ts</code></a></h4><pre><code><span class="hl-0">export</span><span class="hl-1"> </span><span class="hl-0">default</span><span class="hl-1">  {</span><br/><span class="hl-1">    </span><span class="hl-2">api_server:</span><span class="hl-1"> </span><span class="hl-3">&#39;https://toolbox.dev&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-2">api_server_timeout:</span><span class="hl-1"> </span><span class="hl-4">5</span><br/><span class="hl-1">    </span><span class="hl-2">api_client_secret</span><span class="hl-1">: </span><span class="hl-2">process</span><span class="hl-1">.</span><span class="hl-2">env</span><span class="hl-1">.</span><span class="hl-5">CLIENT_SECRET</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-2">squizzle_enabled:</span><span class="hl-1"> </span><span class="hl-6">true</span><span class="hl-1">,</span><br/><span class="hl-1">    db { </span><br/><span class="hl-1">        </span><span class="hl-7">server</span><span class="hl-1">: </span><span class="hl-3">&#39;db.toolbox.dev:5432&#39;</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">};</span><br/>
+</code><button>Copy</button></pre>
+<a id="md:your-code" class="tsd-anchor"></a><h4><a href="#md:your-code">Your code</a></h4><pre><code><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">Configuration</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;config&#39;</span><br/><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-5">config</span><span class="hl-1"> = </span><span class="hl-2">Configuration</span><span class="hl-1">.</span><span class="hl-8">getConfig</span><span class="hl-1">();</span><br/><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-5">api_server</span><span class="hl-1"> = </span><span class="hl-2">config</span><span class="hl-1">.</span><span class="hl-8">getString</span><span class="hl-1">(</span><span class="hl-3">&#39;api_server&#39;</span><span class="hl-1">); </span><span class="hl-9">// https://toolbox.dev</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-5">do_squizzle</span><span class="hl-1"> = </span><span class="hl-2">config</span><span class="hl-1">.</span><span class="hl-8">getBoolean</span><span class="hl-1">(</span><span class="hl-2">squizzle_enabled</span><span class="hl-1">, </span><span class="hl-6">false</span><span class="hl-1">); </span><span class="hl-9">// true; if absent from config, it&#39;ll be false</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-5">db_server</span><span class="hl-1"> = </span><span class="hl-2">config</span><span class="hl-1">.</span><span class="hl-8">get</span><span class="hl-1">(</span><span class="hl-3">&#39;db.server&#39;</span><span class="hl-1">); </span><span class="hl-9">// db.toolbox.dev:5432</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-5">db_username</span><span class="hl-1"> = </span><span class="hl-2">config</span><span class="hl-1">.</span><span class="hl-8">get</span><span class="hl-1">(</span><span class="hl-2">db</span><span class="hl-1">.</span><span class="hl-2">username</span><span class="hl-3">&#39;); // null, since not in file and no default</span><span class="hl-10">.</span>
+</code><button>Copy</button></pre>
 <p>The module codifies and implements a few rules intended to make configuration straightforward and predictable. You supply a config file for every environment you intend to support. Code consumers grab config from the module, and should not need, in general cases, to check the environment directly, just use the supplied config values.</p>
 <p>Configuration files are separate per-environment, to make separation a little cleaner and reduce the need for code/conditionals in the config file. Ideally, these files are as close as possible to being just simple key-value declarations.</p>
-<a id="md:how-it-works" class="tsd-anchor"></a><h2><a href="#md:how-it-works">How It Works</a></h2><p>There are 4 supported environment types, mapping to the 3 conventional node environments - <code>development</code>, <code>test</code>, and <code>production</code>, plus an extra <code>staging</code>. (We could also also add <code>local</code>, since we use that at Pocket, but I skipped that here since maybe that&#39;s not something we&#39;ll need movig forward).</p>
+<a id="md:how-it-works" class="tsd-anchor"></a><h3><a href="#md:how-it-works">How It Works</a></h3><p>There are 4 supported environment types, mapping to the 3 conventional node environments - <code>development</code>, <code>test</code>, and <code>production</code>, plus an extra <code>staging</code>.</p>
 <ul>
-<li>First, <code>Configuration</code> loads a <code>.env</code> file, if there&#39;s one in the project root, before loading the environment&#39;s config.</li>
+<li>First, <code>Configuration</code> loads a <code>.env</code> file, if there&#39;s one in cwd, before loading the environment&#39;s config.</li>
 <li>Then, <code>Configuration</code> loads <code>${environment}.ts</code> from the designated config folder<ul>
 <li>This config file is expected to export a default object containing config keys</li>
 <li>The <code>test</code> environment will fall back to <code>development</code> if there&#39;s no <code>test.ts</code> file</li>
 <li>Similarly, the <code>staging</code> environment will fall back to <code>production</code> settings.</li>
 </ul>
 </li>
+<li>Set config and env directories (before grabbing an instance) with <code>Configuration.configFileDir</code> and <code>Configuration.envFileDir</code></li>
 <li>Get the configuration object using <code>Configuration.getConfig()</code></li>
-<li>Access config values via one of the <code>get</code> methods. Currently there&#39;s <code>getString()</code>, <code>getInteger()</code> and <code>getFloat()</code> we can assume a couple more of these.</li>
+<li>Access config values via one of the <code>get</code> methods. <ul>
+<li><code>getArray()</code></li>
+<li><code>getFloat()</code></li>
+<li><code>getInteger()</code></li>
+<li><code>getObject()</code></li>
+<li><code>getString()</code></li>
 </ul>
-<p>The tests are probably to best way to see usage in-action, I&#39;ll document a little better when it&#39;s more wrapped up.</p>
-<a id="md:todos" class="tsd-anchor"></a><h2><a href="#md:todos">TODOs</a></h2><a id="md:near-term" class="tsd-anchor"></a><h3><a href="#md:near-term">Near term</a></h3><p>In bootstrapping this module, I mostly focused on the loading logic; there&#39;s sets of work around </p>
-<ul>
-<li>Accessors, typechecking, defaulting, etc. </li>
-<li>Packaging for easy resuse across services</li>
+</li>
 </ul>
-<a id="md:longer-term" class="tsd-anchor"></a><h3><a href="#md:longer-term">Longer term</a></h3><ul>
-<li><code>Configuration</code> is good consumer access point for feature flag/rollout/test data - to a consuming developer, flags like these basically look like configuration points.</li>
+<p>The tests are probably to best way to see usage in-action. Also see the docs in the docs folder.</p>
+<a id="md:futuretodo" class="tsd-anchor"></a><h3><a href="#md:futuretodo">Future/TODO</a></h3><ul>
+<li><code>Configuration</code> is a good access point for feature, rollout, and experiment inclusion checking, this is a possibilty down the road, either via subclassing or via interfaces to these related systems.</li>
 </ul>
 </div></div>
 <div class="col-sidebar">
@@ -58,15 +78,19 @@
 <ul>
 <li>
 <ul>
-<li><a href="#md:what39s-here"><span>What&#39;s here</span></a></li>
+<li><a href="#md:mosc-config-configuration"><span>mosc-<wbr/>config configuration</span></a></li>
 <li>
 <ul>
+<li><a href="#md:features"><span>Features</span></a></li>
+<li>
+<ul>
+<li><a href="#md:quickstart"><span>Quickstart</span></a></li>
+<li>
+<ul>
+<li><a href="#md:configdevelopmentts"><span>config/development.ts</span></a></li>
+<li><a href="#md:your-code"><span>Your code</span></a></li></ul></li>
 <li><a href="#md:how-it-works"><span>How <wbr/>It <wbr/>Works</span></a></li>
-<li><a href="#md:todos"><span>TODOs</span></a></li>
-<li>
-<ul>
-<li><a href="#md:near-term"><span>Near term</span></a></li>
-<li><a href="#md:longer-term"><span>Longer term</span></a></li></ul></li></ul></li></ul></li></ul></div></details></div>
+<li><a href="#md:futuretodo"><span>Future/TODO</span></a></li></ul></li></ul></li></ul></li></ul></div></details></div>
 <div class="site-menu">
 <nav class="tsd-navigation"><a href="modules.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-4"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-namespace)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.33 16V7.24H10.77L13.446 14.74C13.43 14.54 13.41 14.296 13.386 14.008C13.37 13.712 13.354 13.404 13.338 13.084C13.33 12.756 13.326 12.448 13.326 12.16V7.24H14.37V16H12.93L10.266 8.5C10.282 8.692 10.298 8.936 10.314 9.232C10.33 9.52 10.342 9.828 10.35 10.156C10.366 10.476 10.374 10.784 10.374 11.08V16H9.33Z" fill="var(--color-text)"></path></g></svg><span>Configuration</span></a>
 <ul class="tsd-small-nested-navigation">
